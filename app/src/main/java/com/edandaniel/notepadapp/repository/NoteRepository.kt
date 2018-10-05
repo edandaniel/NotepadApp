@@ -23,4 +23,21 @@ class NoteRepository{
                     }
                 })
     }
+
+    fun save(note:Note,
+             onComplete: (Note?) -> Unit,
+             onError: (Throwable?) -> Unit){
+
+        getNoteAPI()
+                .save(note)
+                .enqueue(object : Callback<Note>{
+                    override fun onFailure(call: Call<Note>?, t: Throwable?) {
+                        onError(t)
+                    }
+
+                    override fun onResponse(call: Call<Note>?, response: Response<Note>?) {
+                        onComplete(response?.body())
+                    }
+                })
+    }
 }

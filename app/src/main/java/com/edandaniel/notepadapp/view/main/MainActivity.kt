@@ -1,16 +1,19 @@
 package com.edandaniel.notepadapp.view.main
 
+import android.app.Activity
 import android.arch.lifecycle.Observer
 import android.arch.lifecycle.ViewModelProviders
+import android.content.Intent
 import android.os.Bundle
-import android.support.design.widget.Snackbar
 import android.support.v7.app.AppCompatActivity
 import android.support.v7.widget.LinearLayoutManager
 import android.view.Menu
 import android.view.MenuItem
 import android.view.View
+import android.widget.Toast
 import com.edandaniel.notepadapp.R
 import com.edandaniel.notepadapp.model.Note
+import com.edandaniel.notepadapp.view.form.FormActivity
 
 import kotlinx.android.synthetic.main.activity_main.*
 import kotlinx.android.synthetic.main.content_main.*
@@ -21,6 +24,7 @@ class MainActivity : AppCompatActivity() {
     lateinit var mainViewModel: MainViewModel
     private var adapter:MainListAdapter? = null
 
+    val FORM_REQUEST_CODE = 1
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
@@ -35,8 +39,10 @@ class MainActivity : AppCompatActivity() {
         mainViewModel.findAll()
 
         fab.setOnClickListener { view ->
-            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
-                    .setAction("Action", null).show()
+            val formIntent = Intent(this,FormActivity::class.java)
+            startActivityForResult(formIntent,FORM_REQUEST_CODE)
+//            Snackbar.make(view, "Replace with your own action", Snackbar.LENGTH_LONG)
+//                    .setAction("Action", null).show()
         }
     }
 
@@ -72,6 +78,22 @@ class MainActivity : AppCompatActivity() {
         return when (item.itemId) {
             R.id.action_settings -> true
             else -> super.onOptionsItemSelected(item)
+        }
+    }
+
+    override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
+        super.onActivityResult(requestCode, resultCode, data)
+        when(requestCode){
+            FORM_REQUEST_CODE -> {
+                when(resultCode){
+                    Activity.RESULT_OK->{mainViewModel.findAll()}
+                    Activity.RESULT_CANCELED->{
+                        Toast.makeText(this,
+                                "Canceled",
+                                Toast.LENGTH_SHORT).show()
+                    }
+                }
+            }
         }
     }
 }
